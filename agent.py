@@ -5,14 +5,20 @@ class Agent:
     def __init__(self, name, env, color,initial_health=100,initial_stamina=20):
         self.name = name
         self.env = env
-        self.row = random.randint(0, GRID_SIZE - 1)
-        self.col = random.randint(0, GRID_SIZE - 1)
+        
         self.color = color
+        
+        while True:
+            self.row = random.randint(0, GRID_SIZE - 1)
+            self.col = random.randint(0, GRID_SIZE - 1)
+            if env.is_valid_move(self.row, self.col):
+                break
 
         self.health = initial_health
         self.stamina = initial_stamina
         self.max_health = initial_health
         self.max_stamina = initial_stamina
+        self.is_alive = True
 
     def move_random(self):
         move_cost = 1 
@@ -23,11 +29,15 @@ class Agent:
 
         # wrap around
         new_row = (self.row + dr) % GRID_SIZE
-        new_row.col = (self.col + dc) % GRID_SIZE
-        if self.env.is_valid_move(self.row, self.col):
+        new_col = (self.col + dc) % GRID_SIZE
+
+        if self.env.is_valid_move(new_row, new_col):
+
             self.stamina -= move_cost
             self.row = new_row
             self.col = new_col 
+            return True
+        return False
 
 
     def take_turn(self):
@@ -45,31 +55,31 @@ class Agent:
         if self.health <= 0:
             print(f"💀{self.name} has died.")
             self.env.remove_agent(self)
+    def attack(self, target):
+        damage = random.randint(5, 15)
+        target.health -= damage
+        self.stamina -= 2
 
+        if type(self).__name__ == "Predator":
+            print(f"🏹 {self.name} attacked {target.name} for {damage} damage.")
+        else:
+            print(f"👹 {self.name} attacked {target.name} for {damage} damage.")
+        
+        self.health -= 5
 
+    
 
-
-
-def resolve_interaction(self):
-    for other_agent in list(self.env.agents):
-            if other_agent is not self and other_agent.row == self.row and other_agent.col == self.col:
-                is_predator = type(self).__name__ == "Predator"
-                is_monster = type(other_agent).__name__ == "Monster"
-                if is_predator and is_monster:
-                    damage = random.randint(5, 15)
-                    other_agent.health -= damage
-                    self.stamina -= 2
-                    print(f"💥 {self.name} (Predator) fought {other_agent.name} (Monster) for {damage} dmg.")
-                    self.health -= 5
-
-
-
-
-
-
-
-
-
+    def resolve_interaction(self):
+            for other_agent in list(self.env.agents):
+                    if other_agent is not self and other_agent.row == self.row and other_agent.col == self.col:
+                        is_predator = type(self).__name__ == "Predator"
+                        is_monster = type(other_agent).__name__ == "Monster"
+                        if is_predator and is_monster:
+                            damage = random.randint(5, 15)
+                            other_agent.health -= damage
+                            self.stamina -= 2
+                            print(f"💥 {self.name} (Predator) fought {other_agent.name} (Monster) for {damage} dmg.")
+                            self.health -= 5
 
     def draw(self, canvas):
         x1 = self.col * 30

@@ -5,18 +5,88 @@ CELL_SIZE = 30
 GRID_SIZE = 20 
 EMPTY = 0
 ROCK = 1
+STATUS_HEIGHT = 100
 
 
 class Environment :
+    
     def __init__(self):
-        self.agents = []
-        self.window = tk.Tk()
-        self.window.title("predator-prey simulation")
-        self.canvas = tk.Canvas(self.window, width=CELL_SIZE*GRID_SIZE, height=CELL_SIZE*GRID_SIZE)
-        self.canvas.pack()
+        self.agents = []      
+        
+        # Main frame for grid
+        self.window = tk.Tk() 
+        self.main_frame = tk.Frame(self.window)
+        self.main_frame.pack()
         self.grid_data = [[EMPTY for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        
+        # Canvas for the grid
+        self.canvas = tk.Canvas(self.main_frame, 
+                               width=CELL_SIZE*GRID_SIZE, 
+                               height=CELL_SIZE*GRID_SIZE)
+        self.canvas.pack()
+        
+        # Status bar frame at the bottom
+        self.status_frame = tk.Frame(self.window, height=STATUS_HEIGHT, 
+                                     relief=tk.RAISED, borderwidth=2)
+        self.status_frame.pack(fill=tk.X, side=tk.BOTTOM)
+        
+        # Status labels
+        self.status_label = tk.Label(self.status_frame, 
+                                     text="Simulation Started", 
+                                     font=("Arial", 12, "bold"))
+        self.status_label.pack(pady=5)
+        
+        # Agent info frame
+        self.agent_info_frame = tk.Frame(self.status_frame)
+        self.agent_info_frame.pack(fill=tk.X, padx=10)
+        
+        # Create labels for each agent
+        self.agent_labels = {}
+        
+        # Turn counter
+        self.turn_counter = 0
+        self.turn_label = tk.Label(self.status_frame, 
+                                   text=f"Turn: {self.turn_counter}", 
+                                   font=("Arial", 10))
+        self.turn_label.pack(side=tk.LEFT, padx=20)
+        
+        # Alive agents counter
+        self.alive_label = tk.Label(self.status_frame, 
+                                    text="Alive: 0", 
+                                    font=("Arial", 10))
+        self.alive_label.pack(side=tk.RIGHT, padx=20)
 
         self.populate_initial_map()
+    def update_status_bar(self):
+        # Update turn counter
+        self.turn_counter += 1
+        self.turn_label.config(text=f"Turn: {self.turn_counter}")
+        
+        # Update alive agents counter
+        alive_count = len([a for a in self.agents if a.health > 0])
+        self.alive_label.config(text=f"Alive: {alive_count}")
+        
+        # Update individual agent labels
+        for agent in self.agents:
+            if agent.name in self.agent_labels:
+                status_color = "red" if agent.health <= 20 else "black"
+                label_text = f"{agent.name}: H:{agent.health} S:{agent.stamina}"
+                if agent.health <= 0:
+                    label_text += " [DEAD]"
+                
+                self.agent_labels[agent.name].config(
+                    text=label_text,
+                    fg=status_color
+                )
+        
+        # Update overall status
+        if alive_count == 0:
+            self.status_label.config(text="GAME OVER - All agents are dead", fg="red")
+        elif alive_count == 1:
+            survivor = [a for a in self.agents if a.health > 0][0]
+            self.status_label.config(text=f"Last survivor: {survivor.name}", fg="orange")
+        else:
+            self.status_label.config(text=f"Simulation running... {alive_count} agents alive", fg="green")
     def populate_initial_map(self, rock_density=0.1):
         """Randomly places rocks on the map."""
         for r in range(GRID_SIZE):
@@ -32,13 +102,22 @@ class Environment :
     def remove_agent(self, agent):
         if agent in self.agents:
             self.agents.remove(agent)
+            self.update_status_bar()
    
 
 
 
 
     def add_agent(self, agent):
-            self.agents.append(agent)
+        self.agents.append(agent)
+        # Create a label for this agent
+        label = tk.Label(self.agent_info_frame, 
+                        text=f"{agent.name}: H:{agent.health} S:{agent.stamina}",
+                        font=("Arial", 8),
+                        bg=agent.color if agent.color != "green" else "#90EE90")  # Light green for predator
+        label.pack(side=tk.LEFT, padx=10)
+        self.agent_labels[agent.name] = label
+        self.update_status_bar()
     def draw_grid(self):
             self.canvas.delete("all")
             for row in range(GRID_SIZE):
@@ -57,7 +136,7 @@ class Environment :
                         x1, y1, x2, y2,
                         fill=fill_color,
                         outline="gray",
-                        width=5
+                        width=1
                     )
             
             for agent in self.agents:
@@ -74,4 +153,8 @@ class Environment :
             for agent in list(self.agents):
                 agent.take_turn()
             self.draw_grid()
+            self.update_status_bar()
             self.window.after(500, self.update)
+
+
+    
