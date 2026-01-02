@@ -1,5 +1,5 @@
 import random
-from environment import GRID_SIZE
+
 from config import GRID_SIZE
 
 
@@ -7,7 +7,7 @@ class Agent:
     def __init__(self, name, env, color,initial_health=100,initial_stamina=20):
         self.name = name
         self.env = env
-        self.color = color
+       
         self.is_alive = True
         
         self.color = color
@@ -74,10 +74,10 @@ class Agent:
         self.health -= 5
 
         
-        def interact(self, other):
+    def interact(self, other):
             print(f"📌 {self.name} meets {other.name} at ({self.row},{self.col})")
 
-        def handle_interactions(self):
+    def handle_interactions(self):
         # Checking if agent is in same cell as another
         if self.health <= 0:
             return

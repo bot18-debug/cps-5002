@@ -1,5 +1,5 @@
 from agent import Agent
-from environment import GRID_SIZE
+from config import GRID_SIZE
 
 class Wildlife(Agent):
     def __init__(self, name, env):

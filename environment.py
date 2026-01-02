@@ -97,12 +97,14 @@ class Environment :
         if 0 <= r < GRID_SIZE and 0 <= c < GRID_SIZE:
             return self.grid_data[r][c] != ROCK
         return False
+    
+
     def remove_agent(self, agent):
         if agent in self.agents:
             self.agents.remove(agent)
             self.update_status_bar()
    
-        def create_terrain(self):
+    def create_terrain(self):
       
           self.populate_initial_map()
 

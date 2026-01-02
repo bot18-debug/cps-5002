@@ -17,7 +17,7 @@ def main():
 
     env = Environment()
 
-    dek = Predator("Dek", env)
+    dek = Predator("Dek", env, is_dek=True)
     thia = Android("Thia", env)
     beast = Monster("Beast", env)
     boss = UltimateAdversary("Kraken", env)
@@ -54,7 +54,7 @@ def main():
 
 
 
-    env.start()
+ 
     
 
 if __name__ == "__main__":
