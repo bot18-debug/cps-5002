@@ -1,17 +1,14 @@
 import tkinter as tk 
 import random
-
-CELL_SIZE = 30 
-GRID_SIZE = 20 
-EMPTY = 0
-ROCK = 1
-STATUS_HEIGHT = 100
+from config import GRID_SIZE, CELL_SIZE, EMPTY, ROCK, STATUS_HEIGHT
 
 
 class Environment :
     
     def __init__(self):
+
         self.agents = []      
+        self.turn_count = 0
         
         # Main frame for grid
         self.window = tk.Tk() 
@@ -89,6 +86,7 @@ class Environment :
             self.status_label.config(text=f"Simulation running... {alive_count} agents alive", fg="green")
     def populate_initial_map(self, rock_density=0.1):
         """Randomly places rocks on the map."""
+        print(f"Creating terrain with {rock_density*100}% rocks...")
         for r in range(GRID_SIZE):
             for c in range(GRID_SIZE):
                 if random.random() < rock_density:
@@ -104,7 +102,9 @@ class Environment :
             self.agents.remove(agent)
             self.update_status_bar()
    
-
+        def create_terrain(self):
+      
+          self.populate_initial_map()
 
 
 
@@ -127,7 +127,7 @@ class Environment :
                     x2 = x1 + CELL_SIZE
                     y2 = y1 + CELL_SIZE
                     cell_type = self.grid_data[row][col]
-                    fill_color = "#E5E5E5" # Default ash white for EMPTY
+                    fill_color = "#E5E5E5" # ash white for EMPTY
                     
                     if cell_type == ROCK:
                         fill_color = "#606060" # Grey for rock/obstacle

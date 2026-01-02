@@ -1,10 +1,14 @@
 import random
 from environment import GRID_SIZE
+from config import GRID_SIZE
+
 
 class Agent:
     def __init__(self, name, env, color,initial_health=100,initial_stamina=20):
         self.name = name
         self.env = env
+        self.color = color
+        self.is_alive = True
         
         self.color = color
         
@@ -42,6 +46,7 @@ class Agent:
 
     def take_turn(self):
         if self.health <= 0:
+            self.is_alive = False
             return  # Agent is dead, cannot take a turn
         if self.stamina <= 5 and self.health <100: #rest adn recover
             self.stamina += 2  # Regain stamina when low
@@ -49,6 +54,7 @@ class Agent:
             print(f"{self.name} is resting to recover stamina and health.")
         else:
           self.move_random()
+          self.handle_interactions()
           self.resolve_interaction()
         self.stamina = max(0, min(self.stamina, self.max_stamina))
         self.health = max(0, min(self.health, self.max_health))
@@ -67,7 +73,19 @@ class Agent:
         
         self.health -= 5
 
-    
+        
+        def interact(self, other):
+            print(f"📌 {self.name} meets {other.name} at ({self.row},{self.col})")
+
+        def handle_interactions(self):
+        # Checking if agent is in same cell as another
+        if self.health <= 0:
+            return
+        
+        for other in self.env.agents:
+            if other is not self and other.is_alive:
+                if self.row == other.row and self.col == other.col:
+                    self.interact(other)
 
     def resolve_interaction(self):
             for other_agent in list(self.env.agents):

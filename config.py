@@ -1,0 +1,6 @@
+# config.py
+GRID_SIZE = 20
+CELL_SIZE = 30
+EMPTY = 0
+ROCK = 1
+STATUS_HEIGHT = 100

@@ -1,38 +1,39 @@
 from agent import Agent
+from config import GRID_SIZE
+import random
+
 
 class Predator(Agent):
     def __init__(self, name, env, is_dek=False):
-        super().__init__(name, env, color="darkgreen", initial_health=120, initial_stamina=40)
-        self.honour = 50 if is_dek else 100  # Dek starts with less honour
+        if is_dek:
+            health = 90
+            stamina = 25
+        else:
+            health = 120
+            stamina = 40
+
+
+        super().__init__(name, env, color="darkgreen", initial_health=health, initial_stamina=stamina)
+        self.honour = 30 if is_dek else 80  # lower honour for Dek
         self.is_dek = is_dek
         self.is_carrying = False
         self.trophies = 0
+        self.has_met_thia = False
         
     def take_turn(self):
         if self.health <= 0:
             self.is_alive = False
-            return
-        
-        # If Dek is carrying Thia, movement costs more
-        movement_cost = 2 if self.is_carrying and self.is_dek else 1
-        
-        if self.stamina < movement_cost:
-            self.rest()
-        else:
-            if self.move_with_purpose():
-                self.stamina -= movement_cost
-            self.resolve_interaction()
-        
-        # Clamp values
-        self.stamina = max(0, min(self.stamina, self.max_stamina))
-        self.health = max(0, min(self.health, self.max_health))
-        
-        if self.health <= 0 and self.is_alive:
-            self.is_alive = False
             print(f"💀 {self.name} has died.")
-            if self.is_dek and self.honour < 30:
-                print(f"☠️  {self.name} died in dishonour!")
-            self.env.remove_agent(self)
+            return
+        if self.is_dek:
+            self.dek_behavior()
+        else:
+            self.other_predator_behavior()
+
+        self.handle_interactions()
+        self.health = max(0, min(self.health, self.max_health))
+        self.stamina = max(0, min(self.stamina, self.max_stamina))
+        
     
     def move_with_purpose(self):
         """Dek seeks monsters, others patrol randomly"""

@@ -1,4 +1,6 @@
 from agent import Agent
+from config import GRID_SIZE
+
 
 class Android(Agent):
     def __init__(self, name, env):
