@@ -46,21 +46,26 @@ class Agent:
 
     def take_turn(self):
         if self.health <= 0:
-            self.is_alive = False
-            return  # Agent is dead, cannot take a turn
-        if self.stamina <= 5 and self.health <100: #rest adn recover
-            self.stamina += 2  # Regain stamina when low
-            self.health += 1   # Regain health slowly
-            print(f"{self.name} is resting to recover stamina and health.")
-        else:
-          self.move_random()
-          self.handle_interactions()
-          self.resolve_interaction()
+           self.is_alive = False
+           self.env.remove_agent(self)
+
+
+           return  # Agent is dead, cannot take a turn
+        if self.is_alive:
+            if self.stamina <= 5 and self.health <100: #rest adn recover
+                self.stamina += 2  # Regain stamina when low
+                self.health += 1   # Regain health slowly
+                print(f"{self.name} is resting to recover stamina and health.")
+            else:
+                self.move_random()
+                self.handle_interactions()
+                self.resolve_interaction()
         self.stamina = max(0, min(self.stamina, self.max_stamina))
         self.health = max(0, min(self.health, self.max_health))
         if self.health <= 0:
-            print(f"💀{self.name} has died.")
-            self.env.remove_agent(self)
+                print(f"💀{self.name} has died.")
+                self.env.remove_agent(self)
+                return
     def attack(self, target):
         damage = random.randint(5, 15)
         target.health -= damage
@@ -86,6 +91,10 @@ class Agent:
             if other is not self and other.is_alive:
                 if self.row == other.row and self.col == other.col:
                     self.interact(other)
+                    if (type(self).__name__ == "Predator" and 
+                        type(other).__name__ in ["Monster", "UltimateAdversary"]):
+                        self.attack(other)
+
 
     def resolve_interaction(self):
             for other_agent in list(self.env.agents):
@@ -104,10 +113,28 @@ class Agent:
         y1 = self.row * 30
         x2 = x1 + 30
         y2 = y1 + 30
+        if self.name == "Dek":
+        # Draw a glow effect
+            canvas.create_rectangle(
+                x1-2, y1-2, x2+2, y2+2,
+                fill="#81C784",  # Light green glow
+                outline="#4CAF50",
+                width=2
+            )
+
+        elif self.name == "Thia":
+            # Draw a tech-like glow
+            canvas.create_rectangle(
+                x1-1, y1-1, x2+1, y2+1,
+                fill="#64B5F6",  # Light blue glow
+                outline="#2196F3",
+                width=2
+            )
 
         canvas.create_rectangle(
-            x1, y1, x2, y2, 
-            fill=self.color
+            x1, y1, x2, y2,
+            fill=self.color,
+            outline="black"
         )
         canvas.create_text(
             x1 + 15, y1 + 15,

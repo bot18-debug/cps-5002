@@ -20,6 +20,7 @@ class Predator(Agent):
         self.trophies = 0
         self.has_met_thia = False
         
+        
     def take_turn(self):
         if self.health <= 0:
             self.is_alive = False
@@ -33,7 +34,30 @@ class Predator(Agent):
         self.handle_interactions()
         self.health = max(0, min(self.health, self.max_health))
         self.stamina = max(0, min(self.stamina, self.max_stamina))
+    def dek_behavior(self):
+        # Dek seeks monsters
+        if self.health <= 0:
+            self.is_alive = False
+            return
+        # Rest if needed
+        if self.stamina < 10 or self.health < 40:
+            self.rest()
+        else:
+            # Move with purpose (seek monsters)
+            self.move_random()
+            
+        self.handle_interactions()
+    def other_predator_behavior(self):
+        if self.health <= 0:
+            self.is_alive = False
+            return
+        if self.stamina < 10 or self.health < 40:
+              self.rest()
+        else:
+            self.move_random()
         
+
+
     
     def move_with_purpose(self):
         """Dek seeks monsters, others patrol randomly"""

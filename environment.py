@@ -99,6 +99,13 @@ class Environment :
         return False
     
 
+    def remove_dead_agents(self):
+        dead_agents = [agent for agent in self.agents if agent.health <= 0]
+        for agent in dead_agents:
+                if agent in self.agents:
+                    self.agents.remove(agent)
+                    print(f"Removed dead agent: {agent.name}")
+
     def remove_agent(self, agent):
         if agent in self.agents:
             self.agents.remove(agent)
@@ -152,11 +159,19 @@ class Environment :
             self.window.mainloop()
 
     def update(self):
+            
+            self.remove_dead_agents()
+
+
             for agent in list(self.agents):
-                agent.take_turn()
+
+                if agent.is_alive and agent.health > 0:
+                    agent.take_turn()
             self.draw_grid()
             self.update_status_bar()
             self.window.after(500, self.update)
+            
+           
 
 
     
