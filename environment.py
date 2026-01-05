@@ -212,3 +212,4 @@ class Environment :
             self.draw_grid()
             self.update_status_bar()
             self.window.after(500, self.update)
+            

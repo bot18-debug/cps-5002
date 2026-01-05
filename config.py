@@ -21,5 +21,5 @@ COLORS = {
     "FATHER": "#FF9800",     # Orange for Father
     "BROTHER": "#B0A927",    # olive for Brother
     "KRAKEN": "#7B1FA2",     # Deep purple for Kraken
-    "TRAP": "#3D0707FC",  # Red-Black for traps
+    "TRAP": "#8B0000",  # Red-Black for traps
 }
