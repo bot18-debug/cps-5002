@@ -12,10 +12,10 @@ class Environment :
         self.turn_count = 0
         
         # Main frame for grid
+        self.grid_data = [[EMPTY for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         self.window = tk.Tk() 
         self.main_frame = tk.Frame(self.window)
         self.main_frame.pack()
-        self.grid_data = [[EMPTY for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         
         # Canvas for the grid
         self.canvas = tk.Canvas(self.main_frame, 
@@ -56,27 +56,6 @@ class Environment :
 
         self.populate_initial_map()
         self.create_traps() 
-    def update_status_bar(self):
-        # Update turn counter
-        self.turn_counter += 1
-        self.turn_label.config(text=f"Turn: {self.turn_counter}")
-        
-        # Update alive agents counter
-        alive_count = len([a for a in self.agents if a.health > 0])
-        self.alive_label.config(text=f"Alive: {alive_count}")
-        
-        # Update individual agent labels
-        for agent in self.agents:
-            if agent.name in self.agent_labels:
-                 status_color = "red" if agent.health <= 20 else "black"
-                 label_text = f"{agent.name}: H:{agent.health} S:{agent.stamina}"
-                 if agent.health <= 0:
-                    label_text += " [DEAD]"
-                
-                 self.agent_labels[agent.name].config(
-                     text=label_text,
-                    fg=status_color
-                )
 
     def create_traps(self):
          print("Creating traps...")
@@ -99,7 +78,22 @@ class Environment :
                 print(f"⚠️  {agent.name} stepped on a trap! Lost {damage} health.")
                 self.traps.remove(trap)  # Trap is now triggered
                 return True
-            return False
+         return False
+    
+
+
+    def update_status_bar(self):
+        # Update turn counter
+        self.turn_counter += 1
+        self.turn_label.config(text=f"Turn: {self.turn_counter}")
+        
+        # Update alive agents counter
+        alive_count = len([a for a in self.agents if a.health > 0])
+        self.alive_label.config(text=f"Alive: {alive_count}")
+        
+        # Update individual agent labels
+        for agent in self.agents:
+            if agent.name in self.agent_labels:
                 status_color = "red" if agent.health <= 20 else "black"
                 label_text = f"{agent.name}: H:{agent.health} S:{agent.stamina}"
                 if agent.health <= 0:
@@ -218,8 +212,3 @@ class Environment :
             self.draw_grid()
             self.update_status_bar()
             self.window.after(500, self.update)
-            
-           
-
-
-    
