@@ -1,5 +1,5 @@
 from agent import Agent
-from config import GRID_SIZE
+from config import GRID_SIZE,COLORS
 import random
 
 
@@ -8,12 +8,22 @@ class Predator(Agent):
         if is_dek:
             health = 90
             stamina = 25
+            color = COLORS["DEK"]
+        elif name == "Father":
+            health = 120
+            stamina = 40
+            color = COLORS["FATHER"]
+
+        elif name == "Brother":
+            health = 120
+            stamina = 40
+            color = COLORS["BROTHER"]
         else:
             health = 120
             stamina = 40
+            color = COLORS["PREDATOR"]
 
-
-        super().__init__(name, env, color="darkgreen", initial_health=health, initial_stamina=stamina)
+        super().__init__(name, env, color=color, initial_health=health, initial_stamina=stamina)
         self.honour = 30 if is_dek else 80  # lower honour for Dek
         self.is_dek = is_dek
         self.is_carrying = False

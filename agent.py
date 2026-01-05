@@ -1,7 +1,6 @@
 import random
 
-from config import GRID_SIZE
-
+from config import GRID_SIZE,COLORS
 
 class Agent:
     def __init__(self, name, env, color,initial_health=100,initial_stamina=20):
@@ -57,6 +56,7 @@ class Agent:
                 self.health += 1   # Regain health slowly
                 print(f"{self.name} is resting to recover stamina and health.")
             else:
+                self.env.check_trap(self)
                 self.move_random()
                 self.handle_interactions()
                 self.resolve_interaction()
@@ -113,6 +113,7 @@ class Agent:
         y1 = self.row * 30
         x2 = x1 + 30
         y2 = y1 + 30
+        
         if self.name == "Dek":
         # Draw a glow effect
             canvas.create_rectangle(
@@ -121,6 +122,7 @@ class Agent:
                 outline="#4CAF50",
                 width=2
             )
+        
 
         elif self.name == "Thia":
             # Draw a tech-like glow

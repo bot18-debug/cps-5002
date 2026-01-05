@@ -1,13 +1,14 @@
 import tkinter as tk 
 import random
-from config import GRID_SIZE, CELL_SIZE, EMPTY, ROCK, STATUS_HEIGHT
+from config import GRID_SIZE, CELL_SIZE, EMPTY, ROCK, STATUS_HEIGHT,COLORS
 
 
 class Environment :
     
     def __init__(self):
 
-        self.agents = []      
+        self.agents = []  
+        self.traps = []    
         self.turn_count = 0
         
         # Main frame for grid
@@ -54,6 +55,7 @@ class Environment :
         self.alive_label.pack(side=tk.RIGHT, padx=20)
 
         self.populate_initial_map()
+        self.create_traps() 
     def update_status_bar(self):
         # Update turn counter
         self.turn_counter += 1
@@ -66,6 +68,38 @@ class Environment :
         # Update individual agent labels
         for agent in self.agents:
             if agent.name in self.agent_labels:
+                 status_color = "red" if agent.health <= 20 else "black"
+                 label_text = f"{agent.name}: H:{agent.health} S:{agent.stamina}"
+                 if agent.health <= 0:
+                    label_text += " [DEAD]"
+                
+                 self.agent_labels[agent.name].config(
+                     text=label_text,
+                    fg=status_color
+                )
+
+    def create_traps(self):
+         print("Creating traps...")
+         for _ in range(10):
+            while True:
+                r = random.randint(0, GRID_SIZE - 1)
+                c = random.randint(0, GRID_SIZE - 1)
+                # Only place in empty cells, not on rocks or where agents start
+                if self.grid_data[r][c] == EMPTY:
+                    self.traps.append((r, c))
+                    break
+
+    def check_trap(self, agent):
+         for trap in self.traps:
+            if agent.row == trap[0] and agent.col == trap[1]:
+                # Trigger trap
+                damage = random.randint(10, 20)
+                agent.health -= damage
+                agent.stamina -= 5
+                print(f"⚠️  {agent.name} stepped on a trap! Lost {damage} health.")
+                self.traps.remove(trap)  # Trap is now triggered
+                return True
+            return False
                 status_color = "red" if agent.health <= 20 else "black"
                 label_text = f"{agent.name}: H:{agent.health} S:{agent.stamina}"
                 if agent.health <= 0:
@@ -151,6 +185,20 @@ class Environment :
             for agent in self.agents:
                 agent.draw(self.canvas)
 
+            for trap in self.traps:
+                r, c = trap
+                x1 = c * CELL_SIZE
+                y1 = r * CELL_SIZE
+                x2 = x1 + CELL_SIZE
+                y2 = y1 + CELL_SIZE
+                      #Draw Red-Black triangle for trap
+                self.canvas.create_polygon(
+                x1 + 5, y2 - 5,  # Bottom-left
+                x1 + 15, y1 + 5,  # Top-middle
+                x2 - 5, y2 - 5,   # Bottom-right
+                fill=COLORS["TRAP"],
+                outline="black"
+            )
 
 
 

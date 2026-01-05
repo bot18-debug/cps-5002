@@ -1,10 +1,10 @@
 from agent import Agent
-from config import GRID_SIZE
+from config import GRID_SIZE,COLORS
 import random
 
 class Android(Agent):
     def __init__(self, name, env):
-        super().__init__(name, env, color="darkblue", initial_health=80, initial_stamina=0)
+        super().__init__(name, env, color=COLORS["THIA"], initial_health=80, initial_stamina=0)
         self.is_functional = True
         self.known_threats = []
         self.scan_range = 3
@@ -25,6 +25,21 @@ class Android(Agent):
     def scan_environment(self):
         """Scan nearby cells for threats and update knowledge"""
         threats = []
+        # Check for traps nearby
+        for trap in self.env.traps:
+            distance = abs(trap[0] - self.row) + abs(trap[1] - self.col)
+            if distance <= self.scan_range:
+                threats.append(("Trap", trap[0], trap[1]))
+
+
+        # Warn Dek if threats nearby
+        for agent in self.env.agents:
+            if type(agent).__name__ == "Predator" and agent.is_dek:
+                distance = abs(agent.row - self.row) + abs(agent.col - self.col)
+                if distance <= 2 and threats:
+                    print(f"📡 {self.name} warns Dek: {len(threats)} threats detected nearby")
+
+        # Check for hostile agents nearby
         for r in range(max(0, self.row - self.scan_range), 
                       min(GRID_SIZE, self.row + self.scan_range + 1)):
             for c in range(max(0, self.col - self.scan_range), 

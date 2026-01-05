@@ -1,9 +1,9 @@
 from agent import Agent
-from config import GRID_SIZE
+from config import GRID_SIZE,COLORS
 
 class Wildlife(Agent):
     def __init__(self, name, env):
-        super().__init__(name, env, color="brown", initial_health=40, initial_stamina=30)
+        super().__init__(name, env, color=COLORS["WILDLIFE"], initial_health=40, initial_stamina=30)
     
     def take_turn(self):
         if self.health <= 0:

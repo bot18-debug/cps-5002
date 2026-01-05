@@ -1,12 +1,12 @@
 from agent import Agent
 import random
-from config import GRID_SIZE
+from config import GRID_SIZE,COLORS
 
 
 
 class UltimateAdversary(Agent):
     def __init__(self, name, env):
-        super().__init__(name, env, color="purple", initial_health=200, initial_stamina=60)
+        super().__init__(name, env, color=COLORS["KRAKEN"], initial_health=200, initial_stamina=60)
         self.rage = 0
         self.territory_radius = 4
         
